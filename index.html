@@ -201,8 +201,8 @@
                 headersRow.innerHTML = '';
                 cuerpoTabla.innerHTML = '';
 
-                // 1. Crear encabezados dinámicamente
-                const encabezados = Object.keys(datos[0]);
+                // 1. Crear encabezados dinámicamente (saltando la primera columna)
+                const encabezados = Object.keys(datos[0]).slice(1);
                 encabezados.forEach(header => {
                     const th = document.createElement('th');
                     th.textContent = header;
