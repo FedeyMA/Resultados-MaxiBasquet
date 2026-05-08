@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados en Tiempo Real</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .loading { font-style: italic; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Marcadores en Vivo</h1>
+    <div id="estado" class="loading">Cargando datos...</div>
+    <table id="tabla-resultados">
+        <thead><tr id="headers"></tr></thead>
+        <tbody id="cuerpo-tabla"></tbody>
+    </table>
+
+    <script>
+        const WEB_APP_URL = 'TU_URL_DE_APPS_SCRIPT_AQUI';
+
+        async function cargarDatos() {
+            try {
+                const response = await fetch(WEB_APP_URL);
+                const datos = await response.json();
+                
+                if (datos.length === 0) return;
+
+                const headersRow = document.getElementById('headers');
+                const cuerpoTabla = document.getElementById('cuerpo-tabla');
+                
+                // Limpiar contenido previo
+                headersRow.innerHTML = '';
+                cuerpoTabla.innerHTML = '';
+
+                // Crear encabezados dinámicamente
+                const encabezados = Object.keys(datos[0]);
+                encabezados.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headersRow.appendChild(th);
+                });
+
+                // Crear filas
+                datos.forEach(fila => {
+                    const tr = document.createElement('tr');
+                    encabezados.forEach(header => {
+                        const td = document.createElement('td');
+                        td.textContent = fila[header];
+                        tr.appendChild(td);
+                    });
+                    cuerpoTabla.appendChild(tr);
+                });
+
+                document.getElementById('estado').textContent = 'Última actualización: ' + new Date().toLocaleTimeString();
+            } catch (error) {
+                document.getElementById('estado').textContent = 'Error al cargar datos.';
+                console.error(error);
+            }
+        }
+
+        // Cargar al iniciar y cada 30 segundos
+        cargarDatos();
+        setInterval(cargarDatos, 30000);
+    </script>
+</body>
+</html>
